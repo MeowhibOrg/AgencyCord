@@ -7,12 +7,17 @@ import { env } from "@/../.env.mjs"
 // Add this type declaration
 declare module "next-auth" {
   interface User {
-    organization?: string | null
+    organization?: string
   }
   interface Session {
     user: User & {
-      organization?: string | null
+      organization?: string
     }
+    accessToken?: string
+  }
+  interface JWT {
+    organization?: string
+    accessToken?: string
   }
 }
 
@@ -34,19 +39,36 @@ export const {
     Github({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: "read:user user:email read:org",
+        },
+      },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user?.organization) {
-        token.organization = user.organization
+    async jwt({ token, account, profile }) {
+      if (account && profile) {
+        token.accessToken = account.access_token
+
+        // Fetch user's organizations
+        const orgsResponse = await fetch("https://api.github.com/user/orgs", {
+          headers: {
+            Authorization: `token ${account.access_token}`,
+          },
+        })
+        const orgs = await orgsResponse.json()
+
+        // Store the first organization (you might want to handle multiple orgs differently)
+        if (orgs.length > 0) {
+          token.organization = orgs[0].login
+        }
       }
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.organization = token.organization as string | null
-      }
+      session.accessToken = token.accessToken as string | undefined
+      session.user.organization = token.organization as string | undefined
       return session
     },
   },

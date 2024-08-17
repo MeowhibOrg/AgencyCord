@@ -30,6 +30,7 @@ export async function ContentHeader({
         <SidebarMobile />
       </span>
       <span className="flex items-center space-x-4">
+        <span>{session.user.organization}</span>
         <OrganizationSwitcher />
         <LocaleSwitcher />
         <UserDropdown user={session.user} />

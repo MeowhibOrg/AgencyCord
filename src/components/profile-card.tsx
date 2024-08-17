@@ -1,6 +1,5 @@
 "use client"
 
-import { format } from "date-fns"
 import { Building, Clock, Mail } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useCurrentUser } from "@/lib/auth/hooks/use-current-user"
