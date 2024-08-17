@@ -1,13 +1,13 @@
 "use client"
 
 import { format } from "date-fns"
-import { Clock, Mail, Building } from "lucide-react"
+import { Building, Clock, Mail } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useCurrentUser } from "@/lib/auth/hooks/use-current-user"
 import { useIsAdmin } from "@/lib/auth/hooks/use-is-admin"
 import { Button } from "@/components/ui/button"
-import { Image } from "@/components/image"
 import { BadgeAdmin } from "@/components/badge-admin"
+import { Image } from "@/components/image"
 
 export function ProfileCard() {
   const t = useTranslations("Components.ProfileCard")
@@ -38,9 +38,9 @@ export function ProfileCard() {
           <span className="text-zinc-400">
             <Clock size={16} />
           </span>
-          <span>
+          {/* <span>
             {t("joined_on", { date: format(user.createdAt, "dd.MM.yyyy") })}
-          </span>
+          </span> */}
         </p>
         <p className="flex items-center space-x-2">
           <span className="text-zinc-400">

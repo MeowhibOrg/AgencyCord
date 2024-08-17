@@ -35,9 +35,16 @@ export function ButtonSocialLogin({
   const handleSignIn = useCallback(async (provider: SocialProvider) => {
     setLoading(true)
     try {
-      await signIn(provider, {
+      const result = await signIn(provider, {
         callbackUrl: REDIRECT_AUTHENTICATED,
       })
+      if (result?.error) {
+        console.error("Sign in error:", result.error)
+        // You might want to show an error message to the user here
+      }
+    } catch (error) {
+      console.error("Sign in error:", error)
+      // You might want to show an error message to the user here
     } finally {
       setLoading(false)
     }

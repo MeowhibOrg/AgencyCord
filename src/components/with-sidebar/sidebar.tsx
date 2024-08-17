@@ -1,12 +1,10 @@
-import { auth, getIsAdmin } from "@/lib/auth"
+import { auth } from "@/lib/auth"
 import { Logo } from "@/components/logo"
 import { SidebarNav } from "@/components/with-sidebar/sidebar-nav"
 import { appConfig } from "@/../app.config"
-import { Badge } from "@/components/ui/badge"
 
 export async function Sidebar() {
   const session = await auth()
-  const isAdmin = await getIsAdmin()
 
   if (!session?.user) {
     return null
@@ -22,7 +20,6 @@ export async function Sidebar() {
       <div className="flex h-full flex-col overflow-y-auto border-r bg-zinc-100/40">
         <div className="flex h-16 shrink-0 items-center justify-between border-b px-4 backdrop-blur-lg lg:px-6">
           <Logo href="/" />
-          {isAdmin && <Badge variant="outline">Admin</Badge>}
         </div>
         <nav className="flex h-full flex-col p-4" aria-label="Main Navigation">
           <ul className="space-y-1.5 font-medium">

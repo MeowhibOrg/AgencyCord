@@ -9,6 +9,11 @@ declare module "next-auth" {
   interface User {
     organization?: string | null
   }
+  interface Session {
+    user: User & {
+      organization?: string | null
+    }
+  }
 }
 
 export const {
@@ -55,14 +60,4 @@ export async function getSessionOrThrow(message?: string) {
   }
 
   return session
-}
-
-export async function getIsAdmin(message?: string) {
-  const session = await auth()
-
-  if (!session) {
-    throw new Error(message || "Unauthorized")
-  }
-
-  return session.user.role === "ADMIN"
 }

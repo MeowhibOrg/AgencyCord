@@ -19,16 +19,17 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  image         String?
-  accounts      Account[]
-  emailVerified Boolean?  @default(false)
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  organization  String?
+  id             String        @id @default(cuid())
+  name           String?
+  email          String?       @unique
+  image          String?
+  accounts       Account[]
+  emailVerified  Boolean?      @default(false)
+  role           UserRole      @default(USER)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model Account {
@@ -131,4 +132,12 @@ model IssueComment {
   issue      Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
   employeeId String
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
 }

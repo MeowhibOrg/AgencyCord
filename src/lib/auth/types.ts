@@ -10,3 +10,8 @@ export type ExtendedUser = DefaultSession["user"] & {
 export enum SocialProvider {
   Github = "github",
 }
+
+export type Organization = {
+  id: string
+  name: string
+}

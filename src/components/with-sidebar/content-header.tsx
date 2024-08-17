@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { redirect } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { LocaleSwitcher } from "@/components/locale-switcher"
+import OrganizationSwitcher from "@/components/organization-switcher"
 import { UserDropdown } from "@/components/user-dropdown"
 import { SidebarMobile } from "@/components/with-sidebar/sidebar-mobile"
 
@@ -29,6 +30,7 @@ export async function ContentHeader({
         <SidebarMobile />
       </span>
       <span className="flex items-center space-x-4">
+        <OrganizationSwitcher />
         <LocaleSwitcher />
         <UserDropdown user={session.user} />
       </span>
