@@ -48,3 +48,86 @@ model Account {
 
   @@unique([provider, providerAccountId])
 }
+
+model Employee {
+  id                  String               @id @default(cuid())
+  name                String
+  githubUsername      String
+  discordUsername     String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  timeEntries         TimeEntry[]
+  commits             Commit[]
+  pullRequestComments PullRequestComment[]
+  issueComments       IssueComment[]
+}
+
+model TimeEntry {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  timeIn     DateTime
+  timeOut    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  commits    Commit[]
+}
+
+model Commit {
+  id           String    @id @default(cuid())
+  employeeId   String
+  employee     Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  commitHash   String
+  message      String
+  branch       String
+  repo         String
+  timeEntryId  String
+  timeEntry    TimeEntry @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+  linesAdded   Int
+  linesRemoved Int
+}
+
+model PullRequest {
+  id        String               @id @default(cuid())
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  title     String
+  url       String
+  repo      String
+  branch    String
+  comments  PullRequestComment[]
+}
+
+model PullRequestComment {
+  id            String      @id @default(cuid())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  comment       String
+  pullRequestId String
+  pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
+  employeeId    String
+  employee      Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+model Issue {
+  id        String         @id @default(cuid())
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  title     String
+  url       String
+  repo      String
+  comments  IssueComment[]
+}
+
+model IssueComment {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  comment    String
+  issueId    String
+  issue      Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
