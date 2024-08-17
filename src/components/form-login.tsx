@@ -15,9 +15,6 @@ export function FormLogin() {
       </header>
       <hr className="mx-auto max-w-64" />
       <div className="flex flex-col items-center justify-center space-y-4">
-        <ButtonSocialLogin provider={SocialProvider.Google} size="lg">
-          {t("button_google")}
-        </ButtonSocialLogin>
         <ButtonSocialLogin provider={SocialProvider.Github} size="lg">
           {t("button_github")}
         </ButtonSocialLogin>

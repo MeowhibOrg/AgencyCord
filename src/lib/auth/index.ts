@@ -2,7 +2,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { UserRole } from "@prisma/client"
 import NextAuth from "next-auth"
 import Github from "next-auth/providers/github"
-import Google from "next-auth/providers/google"
 import { getUserById } from "@/lib/auth/db/user"
 import { db } from "@/lib/db"
 import { env } from "@/../.env.mjs"
@@ -22,10 +21,6 @@ export const {
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
   providers: [
-    Google({
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-    }),
     Github({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,

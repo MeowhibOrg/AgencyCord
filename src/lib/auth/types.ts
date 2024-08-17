@@ -7,6 +7,5 @@ export type ExtendedUser = DefaultSession["user"] & {
 }
 
 export enum SocialProvider {
-  Google = "google",
   Github = "github",
 }

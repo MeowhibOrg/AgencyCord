@@ -3,7 +3,6 @@
 import { useCallback, useState } from "react"
 import { signIn } from "next-auth/react"
 import { FaGithub } from "react-icons/fa6"
-import { FcGoogle } from "react-icons/fc"
 import { SocialProvider } from "@/lib/auth/types"
 import { cn } from "@/lib/utils"
 import { Button, type ButtonProps } from "@/components/ui/button"
@@ -52,8 +51,6 @@ export function ButtonSocialLogin({
     size: number
   } & React.ComponentProps<"svg">) => {
     switch (provider) {
-      case "google":
-        return <FcGoogle {...rest} />
       case "github":
         return <FaGithub {...rest} />
       default:
