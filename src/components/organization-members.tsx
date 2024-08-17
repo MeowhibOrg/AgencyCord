@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import { AlertCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
 
@@ -67,10 +68,12 @@ export function OrganizationMembers() {
       {members.map(member => (
         <div key={member.id} className="rounded-lg border p-4 shadow-sm">
           <div className="flex items-center space-x-4">
-            <img
+            <Image
               src={member.avatar_url}
               alt={member.name}
-              className="h-12 w-12 rounded-full"
+              width={48}
+              height={48}
+              className="size-12 rounded-full"
             />
             <div>
               <a
