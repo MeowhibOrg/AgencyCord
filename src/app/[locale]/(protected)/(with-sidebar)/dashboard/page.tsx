@@ -1,6 +1,6 @@
 import { Building } from "lucide-react"
 import { auth } from "@/lib/auth"
-import { Placeholder } from "@/components/placeholder"
+import { OrganizationRepositories } from "@/components/organization-repositories"
 import { Title } from "@/components/title"
 import { Content } from "@/components/with-sidebar/content"
 
@@ -20,15 +20,7 @@ export default async function Dashboard() {
           {session.user.organization || "No organization"}
         </span>
       </div>
-      <div className="flex flex-col gap-4 md:flex-row">
-        <Placeholder />
-        <Placeholder />
-        <Placeholder />
-      </div>
-      <div className="flex flex-col gap-4 md:flex-row">
-        <Placeholder />
-        <Placeholder />
-      </div>
+      <OrganizationRepositories />
     </Content>
   )
 }

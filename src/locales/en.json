@@ -150,10 +150,6 @@
       "label": "Change language",
       "locale": "{locale, select, de {Deutsch} en {English} other {Unknown}}"
     },
-    "OrganizationSwitcher": {
-      "no_organizations": "No organizations",
-      "select_organization": "Select an organization"
-    },
     "PricingCard": {
       "price": "{amount}€",
       "savings": "Save {amount}€/month",
@@ -242,6 +238,10 @@
       "title": "404",
       "description": "Sorry, the page you were looking doesn't exist.",
       "link": "Back to homepage"
+    },
+    "Dashboard": {
+      "title": "Dashboard",
+      "no_organization": "No organization"
     }
   }
 }

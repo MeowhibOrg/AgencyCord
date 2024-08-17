@@ -8,7 +8,7 @@ import { Organization } from "@/lib/auth/types"
 export default function OrganizationSwitcher() {
   const { data: session, update } = useSession()
   const [organizations, setOrganizations] = useState<Organization[]>([])
-  const t = useTranslations("Components.OrganizationSwitcher")
+  const t = useTranslations("Pages.Dashboard")
 
   useEffect(() => {
     // Fetch user's organizations
@@ -39,7 +39,7 @@ export default function OrganizationSwitcher() {
   }
 
   if (organizations.length === 0) {
-    return <span>{t("no_organizations")}</span>
+    return <span>{t("no_organization")}</span>
   }
 
   return (
@@ -48,7 +48,7 @@ export default function OrganizationSwitcher() {
       value={session?.user?.organization || ""}
       className="rounded border px-2 py-1"
     >
-      <option value="">{t("select_organization")}</option>
+      <option value="">{t("no_organization")}</option>
       {organizations.map(org => (
         <option key={org.id} value={org.id}>
           {org.name}
