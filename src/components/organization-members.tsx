@@ -21,7 +21,7 @@ export function OrganizationMembers() {
   useEffect(() => {
     async function fetchMembers() {
       try {
-        const response = await fetch("/api/user/users")
+        const response = await fetch("/api/users")
         if (response.ok) {
           const data = await response.json()
           setMembers(data)

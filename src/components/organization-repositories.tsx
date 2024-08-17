@@ -19,7 +19,7 @@ export default function OrganizationRepositories() {
   useEffect(() => {
     async function fetchRepositories() {
       try {
-        const response = await fetch("/api/user/repositories")
+        const response = await fetch("/api/repositories")
         if (response.ok) {
           const data = await response.json()
           setRepositories(data)

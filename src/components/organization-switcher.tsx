@@ -13,7 +13,7 @@ export default function OrganizationSwitcher() {
   useEffect(() => {
     // Fetch user's organizations
     async function fetchOrganizations() {
-      const response = await fetch("/api/user/organizations")
+      const response = await fetch("/api/organizations")
       const data = await response.json()
       setOrganizations(data)
     }
@@ -21,7 +21,7 @@ export default function OrganizationSwitcher() {
   }, [])
 
   async function switchOrganization(orgId: string) {
-    const response = await fetch("/api/user/organization", {
+    const response = await fetch("/api/organization", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ organizationId: orgId }),

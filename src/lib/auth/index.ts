@@ -52,7 +52,7 @@ export const {
         token.accessToken = account.access_token
 
         // Fetch user's organizations
-        const orgsResponse = await fetch("https://api.github.com/user/orgs", {
+        const orgsResponse = await fetch("https://api.github.com/orgs", {
           headers: {
             Authorization: `token ${account.access_token}`,
           },
