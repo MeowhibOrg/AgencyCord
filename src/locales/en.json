@@ -225,6 +225,13 @@
       "no_members_description": "There are no members available for this organization.",
       "error": "Error",
       "fetch_error": "An error occurred while fetching members"
+    },
+    "OrganizationCommits": {
+      "loading": "Loading commits...",
+      "no_commits": "No commits found",
+      "no_commits_description": "There are no commits available for this organization.",
+      "error": "Error",
+      "fetch_error": "An error occurred while fetching commits"
     }
   },
   "Pages": {
