@@ -41,7 +41,7 @@ export const {
       clientSecret: env.GITHUB_CLIENT_SECRET,
       authorization: {
         params: {
-          scope: "read:user user:email read:org",
+          scope: "read:user user:email read:org repo",
         },
       },
     }),

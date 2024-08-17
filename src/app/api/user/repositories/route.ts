@@ -1,41 +1,27 @@
 import { NextResponse } from "next/server"
+import { Octokit } from "@octokit/rest"
 import { getSessionOrThrow } from "@/lib/auth"
 
 export async function GET() {
   try {
     const session = await getSessionOrThrow()
     const accessToken = session.accessToken
-
-    if (!accessToken) {
-      return NextResponse.json({ error: "No access token" }, { status: 401 })
-    }
-
     const organizationName = session.user.organization
 
-    if (!organizationName) {
-      return NextResponse.json(
-        { error: "No organization selected" },
-        { status: 400 },
-      )
+    if (!accessToken || !organizationName) {
+      return NextResponse.json({ error: "Unauthorized or no organization set" }, { status: 401 })
     }
 
-    const response = await fetch(
-      `https://api.github.com/orgs/${organizationName}/repos`,
-      {
-        headers: {
-          Authorization: `token ${accessToken}`,
-          Accept: "application/vnd.github.v3+json",
-        },
-      },
-    )
+    const octokit = new Octokit({ auth: accessToken })
 
-    if (!response.ok) {
-      throw new Error(`GitHub API responded with ${response.status}`)
-    }
+    const { data } = await octokit.repos.listForOrg({
+      org: organizationName,
+      type: 'all',
+      sort: 'updated',
+      per_page: 100,
+    })
 
-    const repositories = await response.json()
-
-    return NextResponse.json(repositories)
+    return NextResponse.json(data)
   } catch (error) {
     console.error("Error fetching repositories:", error)
     return NextResponse.json(

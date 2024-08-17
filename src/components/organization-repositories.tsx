@@ -1,18 +1,20 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AlertCircle, GitBranch } from "lucide-react"
+import { AlertCircle, GitBranch, Lock } from "lucide-react"
 
 interface Repository {
   id: number
   name: string
   html_url: string
   description: string
+  private: boolean
 }
 
 export function OrganizationRepositories() {
   const [repositories, setRepositories] = useState<Repository[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchRepositories() {
@@ -21,9 +23,13 @@ export function OrganizationRepositories() {
         if (response.ok) {
           const data = await response.json()
           setRepositories(data)
+        } else {
+          const errorData = await response.json()
+          setError(errorData.error || "Failed to fetch repositories")
         }
       } catch (error) {
         console.error("Failed to fetch repositories:", error)
+        setError("An error occurred while fetching repositories")
       } finally {
         setIsLoading(false)
       }
@@ -47,12 +53,22 @@ export function OrganizationRepositories() {
     )
   }
 
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <AlertCircle size={48} className="mb-4 text-red-400" />
+        <h2 className="mb-2 text-xl font-semibold">Error</h2>
+        <p className="text-gray-600">{error}</p>
+      </div>
+    )
+  }
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {repositories.map(repo => (
         <div key={repo.id} className="rounded-lg border p-4 shadow-sm">
           <div className="flex items-center space-x-2">
-            <GitBranch size={16} />
+            {repo.private ? <Lock size={16} /> : <GitBranch size={16} />}
             <a
               href={repo.html_url}
               target="_blank"
@@ -61,6 +77,11 @@ export function OrganizationRepositories() {
             >
               {repo.name}
             </a>
+            {repo.private && (
+              <span className="rounded-full bg-gray-200 px-2 py-1 text-xs text-gray-700">
+                Private
+              </span>
+            )}
           </div>
           {repo.description && (
             <p className="mt-2 text-sm text-gray-600">{repo.description}</p>
