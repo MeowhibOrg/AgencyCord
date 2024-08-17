@@ -46,9 +46,18 @@ export async function GET(request: Request) {
           since: `${date}T00:00:00Z`,
           until: `${date}T23:59:59Z`,
         })
-        return commits.map(commit => ({
-          ...commit,
-          repository: repo.name,
+        return Promise.all(commits.map(async commit => {
+          const { data: commitData } = await octokit.repos.getCommit({
+            owner: organizationName,
+            repo: repo.name,
+            ref: commit.sha,
+          })
+          return {
+            ...commit,
+            repository: repo.name,
+            linesAdded: commitData.stats?.additions || 0,
+            linesRemoved: commitData.stats?.deletions || 0,
+          }
         }))
       }),
     )

@@ -14,6 +14,8 @@ interface Commit {
     }
   }
   repository: string
+  linesAdded: number
+  linesRemoved: number
 }
 
 export function OrganizationCommits() {
@@ -74,9 +76,17 @@ export function OrganizationCommits() {
         <div key={commit.sha} className="rounded-lg border p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">{commit.commit.author.name}</h3>
-            <span className="text-sm text-gray-500">
-              {new Date(commit.commit.author.date).toLocaleString()}
-            </span>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">
+                {new Date(commit.commit.author.date).toLocaleString()}
+              </span>
+              <span className="text-sm text-green-500">
+                +{commit.linesAdded}
+              </span>
+              <span className="text-sm text-red-500">
+                -{commit.linesRemoved}
+              </span>
+            </div>
           </div>
           <p className="mt-2 text-sm text-gray-600">{commit.commit.message}</p>
           <p className="mt-1 text-xs text-gray-400">
