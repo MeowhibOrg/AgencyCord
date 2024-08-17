@@ -208,7 +208,8 @@
     },
     "ProfileCard": {
       "joined_on": "Joined on {date}",
-      "button_delete_account": "Delete my account"
+      "button_delete_account": "Delete my account",
+      "no_organization": "No organization"
     },
     "ScrollToTop": {
       "aria_label": "Scroll to top"

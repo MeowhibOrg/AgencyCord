@@ -1,7 +1,7 @@
 "use client"
 
 import { format } from "date-fns"
-import { Clock, Mail } from "lucide-react"
+import { Clock, Mail, Building } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useCurrentUser } from "@/lib/auth/hooks/use-current-user"
 import { useIsAdmin } from "@/lib/auth/hooks/use-is-admin"
@@ -41,6 +41,12 @@ export function ProfileCard() {
           <span>
             {t("joined_on", { date: format(user.createdAt, "dd.MM.yyyy") })}
           </span>
+        </p>
+        <p className="flex items-center space-x-2">
+          <span className="text-zinc-400">
+            <Building size={16} />
+          </span>
+          <span>{user.organization || t("no_organization")}</span>
         </p>
       </div>
       {!isAdmin && (

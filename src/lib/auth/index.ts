@@ -1,10 +1,15 @@
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { UserRole } from "@prisma/client"
 import NextAuth from "next-auth"
 import Github from "next-auth/providers/github"
-import { getUserById } from "@/lib/auth/db/user"
 import { db } from "@/lib/db"
 import { env } from "@/../.env.mjs"
+
+// Add this type declaration
+declare module "next-auth" {
+  interface User {
+    organization?: string | null
+  }
+}
 
 export const {
   handlers: { GET, POST },
@@ -27,37 +32,16 @@ export const {
     }),
   ],
   callbacks: {
-    async jwt({ token }) {
-      if (!token.sub) {
-        return token
+    async jwt({ token, user }) {
+      if (user?.organization) {
+        token.organization = user.organization
       }
-
-      const existingUser = await getUserById(token.sub)
-
-      if (!existingUser) {
-        return token
-      }
-
-      token.role = existingUser.role
-      token.createdAt = existingUser.createdAt
-
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        if (token.sub && session.user) {
-          session.user.id = token.sub
-        }
-
-        if (token.role && session.user) {
-          session.user.role = token.role as UserRole
-        }
-
-        if (token.createdAt && session.user) {
-          session.user.createdAt = token.createdAt as Date
-        }
+      if (session.user) {
+        session.user.organization = token.organization as string | null
       }
-
       return session
     },
   },
