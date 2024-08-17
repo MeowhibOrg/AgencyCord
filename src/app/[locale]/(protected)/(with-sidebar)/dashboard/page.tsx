@@ -1,6 +1,6 @@
 import { Building } from "lucide-react"
 import { auth } from "@/lib/auth"
-import { OrganizationRepositories } from "@/components/organization-repositories"
+import OrganizationRepositories from "@/components/organization-repositories"
 import { Title } from "@/components/title"
 import { Content } from "@/components/with-sidebar/content"
 

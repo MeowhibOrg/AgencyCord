@@ -10,7 +10,7 @@ export function SidebarNav() {
   const notifications: LocaleHasTranslationKey<React.ReactNode> = {
     dashboard: "2",
   }
-  const routes = [protectedRoutes.dashboard]
+  const routes = [protectedRoutes.dashboard, protectedRoutes.users]
   return (
     <>
       {routes.map(

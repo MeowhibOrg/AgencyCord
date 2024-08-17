@@ -10,7 +10,8 @@
     "signup": "Sign up",
     "dashboard": "Dashboard",
     "profile": "Profile",
-    "settings": "Settings"
+    "settings": "Settings",
+    "users": "Users"
   },
   "Components": {
     "withSidebar": {
@@ -217,6 +218,13 @@
     "SidebarMobile": {
       "trigger_aria_label": "Open Sidebar",
       "content_aria_label": "Mobile Navigation"
+    },
+    "OrganizationMembers": {
+      "loading": "Loading members...",
+      "no_members": "No members found",
+      "no_members_description": "There are no members available for this organization.",
+      "error": "Error",
+      "fetch_error": "An error occurred while fetching members"
     }
   },
   "Pages": {
@@ -243,5 +251,9 @@
       "title": "Dashboard",
       "no_organization": "No organization"
     }
+  },
+  "Users": {
+    "title": "Organization Users",
+    "loading": "Loading users..."
   }
 }

@@ -6,6 +6,7 @@ import {
   Mail,
   Settings,
   User,
+  Users,
   Zap,
 } from "lucide-react"
 import { LocaleHasTranslationKey, LocalizedRoute } from "@/lib/i18n"
@@ -63,6 +64,11 @@ export const protectedRoutes: LocaleHasTranslationKey<LocalizedRoute> = {
     href: "/dashboard",
     translationKey: "dashboard",
     icon: Home,
+  },
+  users: {
+    href: "/users",
+    translationKey: "users",
+    icon: Users,
   },
   profile: {
     href: "/profile",

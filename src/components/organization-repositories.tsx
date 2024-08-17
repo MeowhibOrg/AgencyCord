@@ -11,7 +11,7 @@ interface Repository {
   private: boolean
 }
 
-export function OrganizationRepositories() {
+export default function OrganizationRepositories() {
   const [repositories, setRepositories] = useState<Repository[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
