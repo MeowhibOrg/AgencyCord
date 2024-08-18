@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { AlertCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { formatRelativeTime } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface Commit {
   sha: string
@@ -14,9 +15,14 @@ interface Commit {
       date: string
     }
   }
+  author: {
+    avatar_url: string
+    login: string
+  }
   repository: string
   linesAdded: number
   linesRemoved: number
+  linesChanged: number
 }
 
 export function OrganizationCommits() {
@@ -75,7 +81,18 @@ export function OrganizationCommits() {
       {commits.map(commit => (
         <div key={commit.sha} className="rounded-lg border p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">{commit.commit.author.name}</h3>
+            <div className="flex items-center space-x-3">
+              <Avatar className="size-6">
+                <AvatarImage
+                  src={commit.author.avatar_url}
+                  alt={commit.author.login}
+                />
+                <AvatarFallback>
+                  {commit.author.login.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <h3 className="font-semibold">{commit.commit.author.name}</h3>
+            </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-500">
                 {formatRelativeTime(new Date(commit.commit.author.date))}
@@ -85,6 +102,9 @@ export function OrganizationCommits() {
               </span>
               <span className="text-sm text-red-500">
                 -{commit.linesRemoved}
+              </span>
+              <span className="text-sm text-blue-500">
+                ~{commit.linesChanged}
               </span>
             </div>
           </div>

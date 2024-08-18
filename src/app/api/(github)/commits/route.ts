@@ -43,6 +43,7 @@ export async function GET() {
             repository: repo.name,
             linesAdded: commitData.stats?.additions || 0,
             linesRemoved: commitData.stats?.deletions || 0,
+            linesChanged: commitData.stats?.total || 0,
           }
         }))
       }),
