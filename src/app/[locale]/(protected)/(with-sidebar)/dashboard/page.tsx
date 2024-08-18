@@ -1,7 +1,7 @@
 import { Building } from "lucide-react"
 import { auth } from "@/lib/auth"
-import OrganizationRepositories from "@/components/organization-repositories"
 import { OrganizationCommits } from "@/components/organization-commits"
+import OrganizationRepositories from "@/components/organization-repositories"
 import { Title } from "@/components/title"
 import { Content } from "@/components/with-sidebar/content"
 
@@ -23,7 +23,7 @@ export default async function Dashboard() {
       </div>
       <OrganizationRepositories />
       <div className="mt-8">
-        <h2 className="mb-4 text-xl font-semibold">Today's Commits</h2>
+        <h2 className="mb-4 text-xl font-semibold">Today&apos;s Commits</h2>
         <OrganizationCommits />
       </div>
     </Content>

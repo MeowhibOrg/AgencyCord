@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { AlertCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { formatRelativeTime } from "@/lib/utils"
 
 interface Commit {
   sha: string
@@ -27,8 +28,7 @@ export function OrganizationCommits() {
   useEffect(() => {
     async function fetchCommits() {
       try {
-        const today = new Date().toISOString().split("T")[0]
-        const response = await fetch(`/api/commits?date=${today}`)
+        const response = await fetch(`/api/commits`)
         if (response.ok) {
           const data = await response.json()
           setCommits(data)
@@ -78,7 +78,7 @@ export function OrganizationCommits() {
             <h3 className="font-semibold">{commit.commit.author.name}</h3>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-500">
-                {new Date(commit.commit.author.date).toLocaleString()}
+                {formatRelativeTime(new Date(commit.commit.author.date))}
               </span>
               <span className="text-sm text-green-500">
                 +{commit.linesAdded}

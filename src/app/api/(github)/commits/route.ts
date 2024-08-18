@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { Octokit } from "@octokit/rest"
 import { getSessionOrThrow } from "@/lib/auth"
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const session = await getSessionOrThrow()
     const accessToken = session.accessToken
@@ -17,19 +17,6 @@ export async function GET(request: Request) {
 
     const octokit = new Octokit({ auth: accessToken })
 
-    // Get the date from the query parameter
-    const { searchParams } = new URL(request.url)
-    const date = searchParams.get("date")
-
-    console.log("Date equals:", date)
-
-    if (!date) {
-      return NextResponse.json(
-        { error: "Date parameter is required" },
-        { status: 400 },
-      )
-    }
-
     // Get all repositories for the organization
     const { data: repos } = await octokit.repos.listForOrg({
       org: organizationName,
@@ -43,8 +30,7 @@ export async function GET(request: Request) {
         const { data: commits } = await octokit.repos.listCommits({
           owner: organizationName,
           repo: repo.name,
-          since: `${date}T00:00:00Z`,
-          until: `${date}T23:59:59Z`,
+          per_page: 10, // Limit to 10 most recent commits per repo
         })
         return Promise.all(commits.map(async commit => {
           const { data: commitData } = await octokit.repos.getCommit({
@@ -62,10 +48,13 @@ export async function GET(request: Request) {
       }),
     )
 
-    // Flatten the array of arrays
-    const flattenedCommits = allCommits.flat()
+    // Flatten the array of arrays and sort by date
+    const flattenedCommits = allCommits.flat().sort((a, b) => 
+      (new Date(b.commit.author?.date ?? 0).getTime() - new Date(a.commit.author?.date ?? 0).getTime())
+    )
 
-    return NextResponse.json(flattenedCommits)
+    // Return only the 50 most recent commits
+    return NextResponse.json(flattenedCommits.slice(0, 50))
   } catch (error) {
     console.error("Error fetching commits:", error)
     return NextResponse.json(
