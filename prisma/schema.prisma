@@ -19,17 +19,23 @@ enum UserRole {
 }
 
 model User {
-  id             String        @id @default(cuid())
-  name           String?
-  email          String?       @unique
-  image          String?
-  accounts       Account[]
-  emailVerified  Boolean?      @default(false)
-  role           UserRole      @default(USER)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
+  id                  String               @id @default(cuid())
+  name                String?
+  email               String?              @unique
+  image               String?
+  accounts            Account[]
+  emailVerified       Boolean?             @default(false)
+  role                UserRole             @default(USER)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  organizationId      String?
+  organization        Organization?        @relation(fields: [organizationId], references: [id])
+  githubUsername      String?
+  discordUsername     String?
+  timeEntries         TimeEntry[]
+  commits             Commit[]
+  pullRequestComments PullRequestComment[]
+  issueComments       IssueComment[]
 }
 
 model Account {
@@ -51,34 +57,21 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model Employee {
-  id                  String               @id @default(cuid())
-  name                String
-  githubUsername      String
-  discordUsername     String
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  timeEntries         TimeEntry[]
-  commits             Commit[]
-  pullRequestComments PullRequestComment[]
-  issueComments       IssueComment[]
-}
-
 model TimeEntry {
-  id         String   @id @default(cuid())
-  employeeId String
-  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  timeIn     DateTime
-  timeOut    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  commits    Commit[]
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timeIn    DateTime
+  timeOut   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  commits   Commit[]
 }
 
 model Commit {
   id           String    @id @default(cuid())
-  employeeId   String
-  employee     Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   commitHash   String
@@ -109,8 +102,8 @@ model PullRequestComment {
   comment       String
   pullRequestId String
   pullRequest   PullRequest @relation(fields: [pullRequestId], references: [id], onDelete: Cascade)
-  employeeId    String
-  employee      Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Issue {
@@ -124,14 +117,14 @@ model Issue {
 }
 
 model IssueComment {
-  id         String   @id @default(cuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  comment    String
-  issueId    String
-  issue      Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
-  employeeId String
-  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  comment   String
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Organization {
