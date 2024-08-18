@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { AlertCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { formatRelativeTime } from "@/lib/utils"
@@ -23,6 +24,7 @@ interface Commit {
   linesAdded: number
   linesRemoved: number
   linesChanged: number
+  html_url: string
 }
 
 export function OrganizationCommits() {
@@ -79,7 +81,13 @@ export function OrganizationCommits() {
   return (
     <div className="space-y-4">
       {commits.map(commit => (
-        <div key={commit.sha} className="rounded-lg border p-4 shadow-sm">
+        <Link
+          key={commit.sha}
+          href={commit.html_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Avatar className="size-6">
@@ -112,7 +120,7 @@ export function OrganizationCommits() {
           <p className="mt-1 text-xs text-gray-400">
             Repository: {commit.repository}
           </p>
-        </div>
+        </Link>
       ))}
     </div>
   )
