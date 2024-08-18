@@ -1,4 +1,6 @@
-import React, { useState } from "react"
+"use client"
+
+import React, { useEffect, useState } from "react"
 import { GitCommit } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -17,6 +19,8 @@ type Commit = {
   time: Date
   message: string
   url: string
+  linesAdded: number
+  linesRemoved: number
 }
 
 type DayData = {
@@ -25,58 +29,41 @@ type DayData = {
   commits: Commit[]
 }
 
-const data: DayData[] = [
-  {
-    day: "Mon",
-    activities: [
-      { start: new Date(2023, 0, 1, 10, 0), end: new Date(2023, 0, 1, 12, 0) },
-      { start: new Date(2023, 0, 1, 14, 0), end: new Date(2023, 0, 1, 17, 0) },
-    ],
-    commits: [
-      {
-        time: new Date(2023, 0, 1, 11, 0),
-        message: "Fix bug in login component",
-        url: "https://github.com/org/repo/commit/abc123",
-      },
-      {
-        time: new Date(2023, 0, 1, 15, 0),
-        message: "Add new feature",
-        url: "https://github.com/org/repo/commit/def456",
-      },
-    ],
-  },
-  {
-    day: "Tue",
-    activities: [
-      { start: new Date(2023, 0, 2, 9, 0), end: new Date(2023, 0, 2, 13, 0) },
-    ],
-    commits: [
-      {
-        time: new Date(2023, 0, 2, 10, 0),
-        message: "Update dependencies",
-        url: "https://github.com/org/repo/commit/ghi789",
-      },
-    ],
-  },
-  {
-    day: "Wed",
-    activities: [
-      { start: new Date(2023, 0, 3, 11, 0), end: new Date(2023, 0, 3, 13, 0) },
-      { start: new Date(2023, 0, 3, 15, 0), end: new Date(2023, 0, 3, 17, 0) },
-    ],
-    commits: [
-      {
-        time: new Date(2023, 0, 3, 16, 0),
-        message: "Refactor user service",
-        url: "https://github.com/org/repo/commit/jkl012",
-      },
-    ],
-  },
-]
+const fetchData = async (): Promise<DayData[]> => {
+  const response = await fetch("/api/activity")
+  if (!response.ok) {
+    throw new Error("Failed to fetch activity data")
+  }
+  return response.json()
+}
 
 export default function ActivityVsCommits() {
+  const [data, setData] = useState<DayData[]>([])
   const [hoveredTime, setHoveredTime] = useState<string | null>(null)
-  const hoursInDay = 12 // Assuming 8am to 8pm workday
+  const [timeRange, setTimeRange] = useState<{ start: number; end: number }>({
+    start: 8,
+    end: 20,
+  })
+
+  useEffect(() => {
+    fetchData().then(setData).catch(console.error)
+  }, [])
+
+  useEffect(() => {
+    if (data.length > 0) {
+      const allTimes = data.flatMap(day =>
+        day.activities.flatMap(act => [
+          act.start.getHours(),
+          act.end.getHours(),
+        ]),
+      )
+      const minTime = Math.max(0, Math.min(...allTimes) - 1)
+      const maxTime = Math.min(24, Math.max(...allTimes) + 1)
+      setTimeRange({ start: minTime, end: maxTime })
+    }
+  }, [data])
+
+  const hoursInDay = timeRange.end - timeRange.start
   const hourWidth = 100 / hoursInDay
 
   const formatTime = (hour: number) => {
@@ -95,7 +82,7 @@ export default function ActivityVsCommits() {
             <div className="w-20"></div>
             {[...Array(hoursInDay)].map((_, i) => (
               <div key={i} className="grow text-center text-xs">
-                {formatTime(i + 8)}
+                {formatTime(i + timeRange.start)}
               </div>
             ))}
           </div>
@@ -112,7 +99,7 @@ export default function ActivityVsCommits() {
                         <div
                           className="absolute h-full bg-blue-200 transition-colors hover:bg-blue-300"
                           style={{
-                            left: `${(activity.start.getHours() - 8) * hourWidth}%`,
+                            left: `${(activity.start.getHours() - timeRange.start) * hourWidth}%`,
                             width: `${(activity.end.getHours() - activity.start.getHours()) * hourWidth}%`,
                           }}
                           onMouseEnter={() =>
@@ -142,7 +129,7 @@ export default function ActivityVsCommits() {
                           rel="noopener noreferrer"
                           className="absolute top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-600"
                           style={{
-                            left: `${(commit.time.getHours() - 8) * hourWidth}%`,
+                            left: `${(commit.time.getHours() - timeRange.start) * hourWidth}%`,
                           }}
                         >
                           <GitCommit size={12} color="white" />
@@ -153,6 +140,12 @@ export default function ActivityVsCommits() {
                         <p className="text-xs text-gray-500">
                           {formatTime(commit.time.getHours())}
                         </p>
+                        <p className="text-xs text-green-500">
+                          +{commit.linesAdded}
+                        </p>
+                        <p className="text-xs text-red-500">
+                          -{commit.linesRemoved}
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -162,11 +155,11 @@ export default function ActivityVsCommits() {
           ))}
         </div>
 
-        {hoveredTime && (
-          <div className="mt-4 text-sm text-gray-600">
-            Hovered Time Range: {hoveredTime}
-          </div>
-        )}
+        <div className="mt-4 h-6 text-sm text-gray-600" aria-hidden="true">
+          <span className="invisible">
+            {hoveredTime || "Hovered Time Range: "}
+          </span>
+        </div>
       </CardContent>
     </Card>
   )

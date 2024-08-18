@@ -9,6 +9,7 @@ export async function GET() {
     const organizationName = session.user.organization
 
     if (!accessToken || !organizationName) {
+      console.error('Missing accessToken or organizationName', { accessToken: !!accessToken, organizationName })
       return NextResponse.json({ error: "Unauthorized or no organization set" }, { status: 401 })
     }
 

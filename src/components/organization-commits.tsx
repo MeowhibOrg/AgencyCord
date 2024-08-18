@@ -34,7 +34,7 @@ export function OrganizationCommits() {
   const t = useTranslations("Components.OrganizationCommits")
 
   useEffect(() => {
-    async function fetchCommits() {
+    const fetchData = async () => {
       try {
         const response = await fetch(`/api/commits`)
         if (response.ok) {
@@ -51,7 +51,7 @@ export function OrganizationCommits() {
         setIsLoading(false)
       }
     }
-    fetchCommits()
+    fetchData()
   }, [t])
 
   if (isLoading) {

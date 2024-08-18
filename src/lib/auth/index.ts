@@ -51,17 +51,28 @@ export const {
       if (account && profile) {
         token.accessToken = account.access_token
 
-        // Fetch user's organizations
-        const orgsResponse = await fetch("https://api.github.com/orgs", {
-          headers: {
-            Authorization: `token ${account.access_token}`,
-          },
-        })
-        const orgs = await orgsResponse.json()
+        try {
+          const orgsResponse = await fetch("https://api.github.com/user/orgs", {
+            headers: {
+              Authorization: `token ${account.access_token}`,
+            },
+          })
+          
+          if (!orgsResponse.ok) {
+            console.error(`Failed to fetch organizations: ${orgsResponse.statusText}`)
+            return token
+          }
 
-        // Store the first organization (you might want to handle multiple orgs differently)
-        if (orgs.length > 0) {
-          token.organization = orgs[0].login
+          const orgs = await orgsResponse.json()
+          console.log('Fetched organizations:', orgs)
+
+          if (orgs.length > 0) {
+            token.organization = orgs[0].login
+          } else {
+            console.log('User has no organizations')
+          }
+        } catch (error) {
+          console.error('Error fetching organizations:', error)
         }
       }
       return token
