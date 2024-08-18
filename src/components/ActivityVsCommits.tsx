@@ -34,7 +34,18 @@ const fetchData = async (): Promise<DayData[]> => {
   if (!response.ok) {
     throw new Error("Failed to fetch activity data")
   }
-  return response.json()
+  const data = await response.json()
+  return data.map((day: DayData) => ({
+    ...day,
+    activities: day.activities.map(activity => ({
+      start: new Date(activity.start),
+      end: new Date(activity.end),
+    })),
+    commits: day.commits.map(commit => ({
+      ...commit,
+      time: new Date(commit.time),
+    })),
+  }))
 }
 
 export default function ActivityVsCommits() {

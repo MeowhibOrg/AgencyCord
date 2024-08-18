@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { getSessionOrThrow } from "@/lib/auth"
 import { db } from "@/lib/db"
 
@@ -15,7 +15,19 @@ interface TimeEntry {
   }[]
 }
 
-export async function GET(request: NextRequest) {
+interface DayData {
+  day: string
+  activities: { start: Date; end: Date }[]
+  commits: {
+    time: Date
+    message: string
+    url: string
+    linesAdded: number
+    linesRemoved: number
+  }[]
+}
+
+export async function GET() {
   try {
     const session = await getSessionOrThrow()
     const userId = session.user.id
@@ -25,7 +37,7 @@ export async function GET(request: NextRequest) {
 
     const timeEntries: TimeEntry[] = await db.timeEntry.findMany({
       where: {
-        employee: { id: userId },
+        user: { id: userId },
         timeIn: { gte: fiveDaysAgo },
       },
       include: {
@@ -34,7 +46,7 @@ export async function GET(request: NextRequest) {
       orderBy: { timeIn: "asc" },
     })
 
-    const dayData = timeEntries.reduce((acc, entry) => {
+    const dayData = timeEntries.reduce<DayData[]>((acc, entry) => {
       const day = entry.timeIn.toLocaleDateString("en-US", { weekday: "short" })
       const existingDay = acc.find(d => d.day === day)
 
