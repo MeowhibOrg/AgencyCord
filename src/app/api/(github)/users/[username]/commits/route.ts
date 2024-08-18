@@ -60,6 +60,16 @@ export async function GET(
           new Date(b.commit.author?.date ?? 0).getTime() -
           new Date(a.commit.author?.date ?? 0).getTime(),
       )
+      .map(commit => ({
+        ...commit,
+        commit: {
+          ...commit.commit,
+          author: {
+            ...commit.commit.author,
+            date: commit.commit.author?.date,
+          },
+        },
+      }))
 
     return NextResponse.json(flattenedCommits.slice(0, 50))
   } catch (error) {

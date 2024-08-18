@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { GitCommit } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Tooltip,
@@ -16,11 +17,18 @@ type Activity = {
 }
 
 type Commit = {
-  time: Date
-  message: string
-  url: string
-  linesAdded: number
-  linesRemoved: number
+  sha: string
+  commit: {
+    message: string
+    author: {
+      date: string
+    }
+  }
+  html_url: string
+  author: {
+    avatar_url: string
+    login: string
+  }
 }
 
 type DayData = {
@@ -29,36 +37,83 @@ type DayData = {
   commits: Commit[]
 }
 
-const fetchData = async (): Promise<DayData[]> => {
-  const response = await fetch("/api/activity")
-  if (!response.ok) {
-    throw new Error("Failed to fetch activity data")
+const fetchData = async ({
+  username,
+}: {
+  username: string
+}): Promise<DayData[]> => {
+  const activityResponse = await fetch("/api/activity")
+  const commitsResponse = await fetch(`/api/users/${username}/commits`)
+
+  if (!activityResponse.ok || !commitsResponse.ok) {
+    throw new Error("Failed to fetch activity or commit data")
   }
-  const data = await response.json()
-  return data.map((day: DayData) => ({
-    ...day,
-    activities: day.activities.map(activity => ({
-      start: new Date(activity.start),
-      end: new Date(activity.end),
-    })),
-    commits: day.commits.map(commit => ({
-      ...commit,
-      time: new Date(commit.time),
-    })),
-  }))
+
+  const activityData = await activityResponse.json()
+  const commitsData = await commitsResponse.json()
+
+  if (!Array.isArray(activityData) || activityData.length === 0) {
+    console.error("Activity data is empty or not an array")
+  }
+  if (!Array.isArray(commitsData) || commitsData.length === 0) {
+    console.error("Commits data is empty or not an array")
+  }
+
+  return activityData.map((day: DayData) => {
+    const dayDate = new Date(day.day)
+    const dayCommits = commitsData.filter((commit: Commit) => {
+      const commitDate = new Date(commit.commit?.author?.date || 0)
+      console.log("Commit date:", commitDate)
+      console.log("Day date:", dayDate)
+      return commitDate.toDateString() === dayDate.toDateString()
+    })
+
+    return {
+      ...day,
+      activities: day.activities.map(activity => ({
+        start: new Date(activity.start),
+        end: new Date(activity.end),
+      })),
+      commits: [
+        ...day.commits,
+        ...dayCommits.map((commit: Commit) => ({
+          ...commit,
+          time: new Date(commit.commit.author.date),
+        })),
+      ],
+    }
+  })
 }
 
-export default function ActivityVsCommits() {
+export default function ActivityVsCommits({ username }: { username: string }) {
   const [data, setData] = useState<DayData[]>([])
   const [hoveredTime, setHoveredTime] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState<{ start: number; end: number }>({
     start: 8,
     end: 20,
   })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchData().then(setData).catch(console.error)
-  }, [])
+    setIsLoading(true)
+    setError(null)
+    fetchData({ username })
+      .then(fetchedData => {
+        setData(fetchedData)
+      })
+      .catch(err => {
+        console.error("Error fetching data:", err)
+        setError("Failed to fetch data. Please try again.")
+      })
+      .finally(() => setIsLoading(false))
+  }, [username])
+
+  useEffect(() => {
+    if (data.length > 0) {
+      console.log("Data with commits:", data)
+    }
+  }, [data])
 
   useEffect(() => {
     if (data.length > 0) {
@@ -79,6 +134,18 @@ export default function ActivityVsCommits() {
 
   const formatTime = (hour: number) => {
     return `${hour % 12 || 12}${hour < 12 ? "AM" : "PM"}`
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
+
+  if (data.length === 0) {
+    return <div>No data available</div>
   }
 
   return (
@@ -135,28 +202,50 @@ export default function ActivityVsCommits() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <a
-                          href={commit.url}
+                          href={commit.html_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="absolute top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-full bg-green-500 transition-colors hover:bg-green-600"
                           style={{
-                            left: `${(commit.time.getHours() - timeRange.start) * hourWidth}%`,
+                            left: `${
+                              (new Date(commit.commit.author.date).getHours() -
+                                timeRange.start +
+                                new Date(
+                                  commit.commit.author.date,
+                                ).getMinutes() /
+                                  60) *
+                              hourWidth
+                            }%`,
                           }}
                         >
                           <GitCommit size={12} color="white" />
                         </a>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>{commit.message}</p>
+                        <p>{commit.commit.message}</p>
                         <p className="text-xs text-gray-500">
-                          {formatTime(commit.time.getHours())}
+                          {formatTime(
+                            new Date(
+                              commit.commit?.author?.date || 0,
+                            ).getHours(),
+                          )}
                         </p>
-                        <p className="text-xs text-green-500">
-                          +{commit.linesAdded}
-                        </p>
-                        <p className="text-xs text-red-500">
-                          -{commit.linesRemoved}
-                        </p>
+                        <div className="flex items-center space-x-2">
+                          <Avatar className="size-4">
+                            <AvatarImage
+                              src={commit.author?.avatar_url}
+                              alt={commit.author?.login}
+                            />
+                            <AvatarFallback>
+                              {commit.author?.login
+                                ?.slice(0, 2)
+                                .toUpperCase() || "NA"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs">
+                            {commit.author?.login || "Unknown"}
+                          </span>
+                        </div>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

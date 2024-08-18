@@ -95,7 +95,7 @@ export function UserProfile({ username }: { username: string }) {
         </div>
       </div>
 
-      <ActivityVsCommits />
+      <ActivityVsCommits username={username} />
 
       <div>
         <h3 className="mb-4 text-xl font-semibold">{t("latest_commits")}</h3>

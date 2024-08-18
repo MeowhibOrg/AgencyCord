@@ -17,9 +17,9 @@ interface TimeEntry {
 
 interface DayData {
   day: string
-  activities: { start: Date; end: Date }[]
+  activities: { start: string; end: string }[]
   commits: {
-    time: Date
+    time: string
     message: string
     url: string
     linesAdded: number
@@ -47,16 +47,16 @@ export async function GET() {
     })
 
     const dayData = timeEntries.reduce<DayData[]>((acc, entry) => {
-      const day = entry.timeIn.toLocaleDateString("en-US", { weekday: "short" })
+      const day = entry.timeIn.toISOString().split("T")[0] // Use ISO format date string
       const existingDay = acc.find(d => d.day === day)
 
       const activity = {
-        start: entry.timeIn,
-        end: entry.timeOut,
+        start: entry.timeIn.toISOString(), // Convert to ISO string
+        end: entry.timeOut.toISOString(), // Convert to ISO string
       }
 
       const commits = entry.commits.map(commit => ({
-        time: commit.createdAt,
+        time: commit.createdAt.toISOString(), // Convert to ISO string
         message: commit.message,
         url: `https://github.com/${commit.repo}/commit/${commit.commitHash}`,
         linesAdded: commit.linesAdded,
