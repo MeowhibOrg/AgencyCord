@@ -6,6 +6,7 @@ import { AlertCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { formatRelativeTime } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import ActivityVsCommits from "@/components/ActivityVsCommits"
 
 interface UserCommit {
   sha: string
@@ -93,6 +94,8 @@ export function UserProfile({ username }: { username: string }) {
           <p className="text-gray-600">{user?.login}</p>
         </div>
       </div>
+
+      <ActivityVsCommits />
 
       <div>
         <h3 className="mb-4 text-xl font-semibold">{t("latest_commits")}</h3>

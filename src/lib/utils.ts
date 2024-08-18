@@ -49,3 +49,11 @@ export function formatRelativeTime(date: Date): string {
     return `${days} day${days > 1 ? "s" : ""} ago`
   }
 }
+
+export function formatTime(date: Date): string {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+}
