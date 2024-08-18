@@ -89,8 +89,8 @@ export default function ActivityVsCommits({ username }: { username: string }) {
   const [data, setData] = useState<DayData[]>([])
   const [hoveredTime, setHoveredTime] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState<{ start: number; end: number }>({
-    start: 8,
-    end: 20,
+    start: 0,
+    end: 24,
   })
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -117,12 +117,15 @@ export default function ActivityVsCommits({ username }: { username: string }) {
 
   useEffect(() => {
     if (data.length > 0) {
-      const allTimes = data.flatMap(day =>
-        day.activities.flatMap(act => [
+      const allTimes = data.flatMap(day => [
+        ...day.activities.flatMap(act => [
           act.start.getHours(),
           act.end.getHours(),
         ]),
-      )
+        ...day.commits.map(commit =>
+          new Date(commit.commit.author.date).getHours(),
+        ),
+      ])
       const minTime = Math.max(0, Math.min(...allTimes) - 1)
       const maxTime = Math.min(24, Math.max(...allTimes) + 1)
       setTimeRange({ start: minTime, end: maxTime })
