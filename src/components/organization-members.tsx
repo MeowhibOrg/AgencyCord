@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { AlertCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
 
@@ -76,14 +77,12 @@ export function OrganizationMembers() {
               className="size-12 rounded-full"
             />
             <div>
-              <a
-                href={member.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href={`/users/${member.name}`}
                 className="font-semibold hover:underline"
               >
                 {member.name}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

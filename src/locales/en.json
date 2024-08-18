@@ -232,6 +232,13 @@
       "no_commits_description": "There are no commits available for this organization.",
       "error": "Error",
       "fetch_error": "An error occurred while fetching commits"
+    },
+    "UserProfile": {
+      "loading": "Loading user profile...",
+      "error": "Error",
+      "fetch_error": "An error occurred while fetching user data",
+      "latest_commits": "Latest Commits",
+      "no_commits": "No commits found for this user."
     }
   },
   "Pages": {
@@ -257,6 +264,9 @@
     "Dashboard": {
       "title": "Dashboard",
       "no_organization": "No organization"
+    },
+    "UserProfile": {
+      "title": "{username}'s Profile"
     }
   },
   "Users": {
